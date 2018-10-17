@@ -17,25 +17,25 @@ import lejos.hardware.Button;
 import java.util.*;
 
 class KuBein {
-    private Motor motor;
+    private NXTRegulatedMotor motor;
 
     // Object variables
-    private final int DEFAULT_SPEED;
+    private final int DEFAULT_SPEED = 300;
     private int rotationSpeed;
 
     // Other variables
     private static final String VERSION_NUMBER = "a_0.1";
 
-    public KuBein(Motor motor, int rotationSpeed) {
+    public KuBein(NXTRegulatedMotor motor, int rotationSpeed) {
         this.motor = motor;
         this.rotationSpeed = rotationSpeed;
         motor.setSpeed(this.rotationSpeed);
     }
 
-    public KuBein(Motor motor) {
+    public KuBein(NXTRegulatedMotor motor) {
         this.motor = motor;
         this.rotationSpeed = DEFAULT_SPEED;
-        motor.setSpeed(this.getRotationSpeed);
+        motor.setSpeed(this.rotationSpeed);
     }
 
     // Public setters & getters

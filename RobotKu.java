@@ -44,10 +44,10 @@ class RobotKu {
         }
         catch (Exception e) {
             System.out.println("Could not connect to other EV3 brick. Please ensure Bluetooth exception.");
-            System.out.println(e.printStackTrace);
+            System.out.println(e.toString());
         }
 
-        brick = BrickFinder.default();      // Set the main EV3 brick
+        brick = BrickFinder.getDefault();      // Set the main EV3 brick
 
         // TODO: Initialize sensor ports
 
