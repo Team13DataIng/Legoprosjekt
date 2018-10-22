@@ -25,6 +25,7 @@ class RobotKu {
     private static Port p1, p2, p3;             // p1: touchSensor | p2: forward ultrasonic | p3: downward ultrasonic
     private static SampleProvider touchSensor;
     private static float[] touchSample;
+    private static KuBein lf, rf, lb, rb;
 
     // Initialize constants
     private static final String VERSION_NUMBER = "a_0.1";
@@ -32,7 +33,20 @@ class RobotKu {
     private static void main(String[] args) {
         System.out.println("Robotku version " + VERSION_NUMBER);
 
+        System.out.println("Test 1");
+
         setupEV3();     // Setup EV3 components
+
+        System.out.println("Test 2");
+
+        System.out.println("Test 3");
+
+        lf = new KuBein(Motor.A);
+        rf = new KuBein(Motor.B);
+        lb = new KuBein(Motor.C);
+        rb = new KuBein(Motor.D);
+
+        standUp();
     }
 
     // Methods
@@ -71,7 +85,10 @@ class RobotKu {
     }
 
     private static void standUp() {
-
+        lf.liftLeg(80);
+        rf.liftLeg(80);
+        lb.liftLeg(80);
+        rb.liftLeg(80);
     }
 
     private static void rotateHead() {
