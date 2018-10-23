@@ -28,7 +28,7 @@ class RobotKu {
     private static KuBein lf, rf, lb, rb;
 
     // Initialize constants
-    private static final String VERSION_NUMBER = "a_0.1";
+    private static final String VERSION_NUMBER = "a_0.3";
 
     private static void main(String[] args) {
         System.out.println("Robotku version " + VERSION_NUMBER);
@@ -36,15 +36,6 @@ class RobotKu {
         System.out.println("Test 1");
 
         setupEV3();     // Setup EV3 components
-
-        System.out.println("Test 2");
-
-        System.out.println("Test 3");
-
-        lf = new KuBein(Motor.A);
-        rf = new KuBein(Motor.B);
-        lb = new KuBein(Motor.C);
-        rb = new KuBein(Motor.D);
 
         standUp();
     }
@@ -70,6 +61,13 @@ class RobotKu {
         p3 = brick.getPort("S3");
 
         touchSensor = new EV3TouchSensor(p1);
+
+        // Setup legs
+        // TODO: Change everything
+        lf = new KuBein(Motor.A, Motor.B);
+        rf = new KuBein(Motor.C, Motor.D);
+        lb = new KuBein(Motor.A, Motor.B);
+        rb = new KuBein(Motor.C, Motor.D);
     }
 
     private static void startWalk() {
@@ -85,10 +83,10 @@ class RobotKu {
     }
 
     private static void standUp() {
-        lf.liftLeg(80);
-        rf.liftLeg(80);
-        lb.liftLeg(80);
-        rb.liftLeg(80);
+        lf.liftLeg();
+        rf.liftLeg();
+        lb.liftLeg();
+        rb.liftLeg();
     }
 
     private static void rotateHead() {
