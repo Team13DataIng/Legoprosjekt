@@ -17,25 +17,32 @@ import lejos.hardware.Button;
 import java.util.*;
 
 class KuBein {
-    private NXTRegulatedMotor motor;
+    private final BaseRegulatedMotor hipMotor;
+    private final BaseRegulatedMotor kneeMotor;
 
     // Object variables
+    private final int KNEE_POS_STANDING = 200;          // TODO: Change
+    private final int HIP_POS_STANDING = 200;           // TODO: Change
     private final int DEFAULT_SPEED = 300;
     private int rotationSpeed;
 
     // Other variables
-    private static final String VERSION_NUMBER = "a_0.1";
+    private static final String VERSION_NUMBER = "a_0.3";
 
-    public KuBein(NXTRegulatedMotor motor, int rotationSpeed) {
-        this.motor = motor;
+    public KuBein(BaseRegulatedMotor hipMotor, BaseRegulatedMotor kneeMotor, int rotationSpeed) {
+        this.hipMotor = hipMotor;
+        this.kneeMotor = kneeMotor;
         this.rotationSpeed = rotationSpeed;
-        motor.setSpeed(this.rotationSpeed);
+        hipMotor.setSpeed(this.rotationSpeed);
+        kneeMotor.setSpeed(this.rotationSpeed);
     }
 
-    public KuBein(NXTRegulatedMotor motor) {
-        this.motor = motor;
+    public KuBein(BaseRegulatedMotor hipMotor, BaseRegulatedMotor kneeMotor) {
+        this.hipMotor = hipMotor;
+        this.kneeMotor = kneeMotor;
         this.rotationSpeed = DEFAULT_SPEED;
-        motor.setSpeed(this.rotationSpeed);
+        hipMotor.setSpeed(this.rotationSpeed);
+        kneeMotor.setSpeed(this.rotationSpeed);
     }
 
     // Public setters & getters
@@ -50,7 +57,8 @@ class KuBein {
 
     public void setRotationSpeed(int newSpeed) {
         rotationSpeed = newSpeed;
-        motor.setSpeed(rotationSpeed);
+        hipMotor.setSpeed(rotationSpeed);
+        kneeMotor.setSpeed(rotationSpeed);
     }
 
     public String getVersionNumber() {
@@ -60,23 +68,18 @@ class KuBein {
     // Public Methods
 
     public void liftLeg() {
-        motor.forward();
+        hipMotor.forward();
+        kneeMotor.forward();
     }
 
     public void lowerLeg() {
-        motor.backward();
-    }
-
-    public void liftLeg(int degrees) {
-        motor.rotate(degrees);
-    }
-
-    public void lowerLeg(int degrees) {
-        motor.rotate(-degrees);
+        hipMotor.backward();
+        kneeMotor.backward();
     }
 
     public void stopLeg() {
-        motor.stop();
+        hipMotor.stop();
+        kneeMotor.stop();
     }
 
     public String toString() {
