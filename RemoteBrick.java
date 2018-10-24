@@ -35,46 +35,81 @@ public class RemoteBrick {
             System.out.println("Got exception " + e);
         }
     }
+
     public void setSpeedAll(int speed){
-        System.out.println("Setting speed: "+speed);
-        for(int i=0;i<motorCount;i++){
+        System.out.println("Setting speed: " + speed);
+        for(int i = 0;i < motorCount; i++){
             motors[i].setSpeed(speed);
         }
     }
+
     public void setSpeed(String motor, int speed){
-        for(int i=0;i<motorCount;i++){
+        for(int i = 0;i < motorCount; i++){
             if(motor.equals(bokstaver[i])){
                 System.out.println("Setting speed at "+motor+": "+speed);
                 motors[i].setSpeed(speed);
             }
         }
     }
+
     public void forward(String motor){
-        for(int i=0;i<motorCount;i++){
+        for(int i = 0; i < motorCount; i++){
             if(motor.equals(bokstaver[i])){
                 System.out.println("Motor "+motor+" forwards");
                 motors[i].forward();
             }
         }
     }
+
+    public void forward(String[] motor){
+        for(int i = 0; i < motorCount; i++){
+            for(int j = 0; j < motor.length; j++){
+                if(motor[j].equals(bokstaver[i])){
+                    System.out.println("Motor " + motor[j] + " forwards");
+                    motors[j].forward();
+                }
+            }
+        }
+    }
+
     public void backward(String motor){
-        for(int i=0;i<motorCount;i++){
+        for(int i = 0; i < motorCount; i++){
             if(motor.equals(bokstaver[i])){
                 System.out.println("Motor "+motor+" backwards");
                 motors[i].backward();
             }
         }
     }
+    public void backward(String[] motor){
+        for(int i = 0; i < motorCount; i++){
+            for(int j = 0; j < motor.length; j++){
+                if(motor[j].equals(bokstaver[i])){
+                    System.out.println("Motor " + motor[j] + " backwards");
+                    motors[j].backward();
+                }
+            }
+        }
+    }
     public void stop(String motor){
-        for(int i=0;i<motorCount;i++){
+        for(int i = 0; i < motorCount; i++){
             if(motor.equals(bokstaver[i])){
                 System.out.println("Motor "+motor+" stop");
                 motors[i].stop();
             }
         }
     }
+    public void stop(String[] motor){
+        for(int i = 0; i < motorCount; i++){
+            for(int j = 0; j < motor.length; j++){
+                if(motor[j].equals(bokstaver[i])){
+                    System.out.println("Motor " + motor[j] + " stop");
+                    motors[j].stop();
+                }
+            }
+        }
+    }
     public void rotate(String motor, int deg){
-        for(int i=0;i<motorCount;i++){
+        for(int i = 0; i < motorCount; i++){
             if(motor.equals(bokstaver[i])){
                 System.out.println("Motor "+motor+" rotate "+deg+" deg");
                 motors[i].rotate(deg);
@@ -83,12 +118,12 @@ public class RemoteBrick {
     }
     public void closeAll(){
         System.out.println("CLosing motors at "+remoteName);
-        for(int i=0;i<motorCount;i++){
+        for(int i = 0; i < motorCount; i++){
             motors[i].close();
         }
     }
     public void remoteMotorTest(){
-        System.out.println("Setting speed.");        
+        System.out.println("Setting speed.");
         for(int i=0;i<motors.length;i++){
             motors[i].setSpeed(900);
         }
@@ -104,7 +139,7 @@ public class RemoteBrick {
         }
         System.out.println("Closing motors. Goodbye.");
         for(int i=0;i<motors.length;i++){
-            motors[i].close();              
+            motors[i].close();
         }
     }
 

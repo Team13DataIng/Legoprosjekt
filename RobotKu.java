@@ -16,21 +16,30 @@ import lejos.hardware.sensor.*;
 import lejos.hardware.Button;
 import java.util.*;
 
-class RobotKu {
+public class RobotKu {
 
     // Initialize EV3 objects
-    private static EV3 ev3;
     private static Brick brick;
     private static TextLCD lcd;
     private static Port p1, p2, p3;             // p1: touchSensor | p2: forward ultrasonic | p3: downward ultrasonic
     private static SampleProvider touchSensor;
     private static float[] touchSample;
-    private static KuBein lf, rf, lb, rb;
+
+    //remote ev3
+    private static RemoteBrick ev3;
+    private static RemoteBrick ev2;
 
     // Initialize constants
-    private static final String VERSION_NUMBER = "a_0.3";
+    private static final String VERSION_NUMBER = "a_0.5";
+    private static final int LEG_SPEED = 10;
+    private static final int STAND_HIP = 800;
+	private static final int STAND_KNEE = 2200;
+    private static final String[] MOTORS_ALL = {"A","B","C","D"};
+    private static final String[] MOTORS_HIP = {"A","0","C","0"};
+    private static final String[] MOTORS_KNEE = {"0","B","0","D"};
 
-    private static void main(String[] args) {
+
+    public static void main(String[] args) {
         System.out.println("Robotku version " + VERSION_NUMBER);
 
         System.out.println("Test 1");
@@ -38,6 +47,10 @@ class RobotKu {
         setupEV3();     // Setup EV3 components
 
         standUp();
+        //delay før alle motorer skrus av
+        delay(8000);
+
+        shutOff();
     }
 
     // Methods
@@ -45,7 +58,11 @@ class RobotKu {
     // This method sets up the EV3 components
     private static void setupEV3() {
         try {
-            // TODO: Attempt to connect to other EV3 brick
+            ev3 = new RemoteBrick("EV3", 4);        //Andre parameter er anntall motorer som skal settes opp.
+            ev2 = new RemoteBrick("EV2", 4);
+
+            ev3.setSpeedAll(LEG_SPEED);
+		    ev2.setSpeedAll(LEG_SPEED);
         }
         catch (Exception e) {
             System.out.println("Could not connect to other EV3 brick. Please ensure Bluetooth exception.");
@@ -55,21 +72,16 @@ class RobotKu {
         brick = BrickFinder.getDefault();      // Set the main EV3 brick
 
         // TODO: Initialize sensor ports
-
         p1 = brick.getPort("S1");
         p2 = brick.getPort("S2");
         p3 = brick.getPort("S3");
-
         touchSensor = new EV3TouchSensor(p1);
-
-        // Setup legs
-        // TODO: Change everything
-        lf = new KuBein(Motor.A, Motor.B);
-        rf = new KuBein(Motor.C, Motor.D);
-        lb = new KuBein(Motor.A, Motor.B);
-        rb = new KuBein(Motor.C, Motor.D);
     }
-
+    private static void shutOff(){
+        System.out.println("Adieu");
+        ev2.closeAll();
+        ev3.closeAll();
+    }
     private static void startWalk() {
 
     }
@@ -81,12 +93,28 @@ class RobotKu {
     private static void lieDown() {
 
     }
-
+    private static void delay(int duration){
+        try {
+			Thread.sleep(duration);
+		}
+		catch(Exception e){
+			System.out.println("Got exeption: " + e);
+		}
+    }
     private static void standUp() {
-        lf.liftLeg();
-        rf.liftLeg();
-        lb.liftLeg();
-        rb.liftLeg();
+        // Denne rekkefølgen er vesentlig
+        ev3.forward(MOTORS_ALL);
+        ev2.backward(MOTORS_ALL);
+
+		delay(STAND_HIP);
+
+        ev3.stop(MOTORS_HIP);
+        ev2.stop(MOTORS_HIP);
+
+		delay(STAND_KNEE - STAND_HIP);
+
+        ev3.stop(MOTORS_KNEE);
+        ev2.stop(MOTORS_KNEE);
     }
 
     private static void rotateHead() {
