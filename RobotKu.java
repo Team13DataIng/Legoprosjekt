@@ -30,7 +30,7 @@ public class RobotKu {
     private static RemoteBrick ev2;
 
     // Initialize constants
-    private static final String VERSION_NUMBER = "a_0.6";
+    private static final String VERSION_NUMBER = "a_0.7";
     private static final int LEG_SPEED = 10;
     private static final int STAND_HIP = 800;
 	private static final int STAND_KNEE = 2200;
@@ -59,9 +59,9 @@ public class RobotKu {
         }
         */
 
-        System.out.println("Waiting 8 seconds");
+        System.out.println("Waiting 10 seconds");
 
-        delay(8000);
+        delay(10000);
 
         lieDown();
 
@@ -218,26 +218,30 @@ public class RobotKu {
     }
 
     private static void standUp() {
-        ev2.setSpeedAll(50);
-        ev3.setSpeedAll(50);
+        System.out.println("Starting standing procedure.");
 
-        ev2.rotateTo("A", 30);
-        ev2.rotateTo("C", 30);
-        ev3.rotateTo("A", 30);
-        ev3.rotateTo("C", 30);
-        ev2.rotateTo("B", 130);
-        ev2.rotateTo("D", 130);
-        ev3.rotateTo("B", 130);
-        ev3.rotateTo("D", 130);
+        ev2.setSpeedAll(30);
+        ev3.setSpeedAll(30);
 
-        System.out.println("Venter i 10 sekunder.");
+		ev2.rotateTo("A", 20);
+		ev2.rotateTo("C", 20);
+		ev2.rotateTo("B", 110);
+        ev2.rotateTo("D", 110);
+		ev3.rotateTo("A", 20);
+		ev3.rotateTo("C", 20);
+		ev3.rotateTo("B", 110);
+        ev3.rotateTo("D", 110);
 
-        delay(10000);
+        delay(8000);
+
+        System.out.println("Standing procedure completed");
     }
 
     private static void lieDown() {
-        ev2.setSpeedAll(50);
-        ev3.setSpeedAll(50);
+        System.out.println("Starting liedown procedure.");
+
+        ev2.setSpeedAll(30);
+        ev3.setSpeedAll(30);
 
         ev2.rotateTo("A", 0);
         ev2.rotateTo("C", 0);
@@ -247,6 +251,10 @@ public class RobotKu {
         ev2.rotateTo("D", 0);
         ev3.rotateTo("B", 0);
         ev3.rotateTo("D", 0);
+
+        delay(8000);
+
+        System.out.println("Liedown procedure completed.");
     }
 
     private static boolean checkForPush() {

@@ -1,3 +1,7 @@
+25.10.2018 (a_0.7) - Eirik Hemstad
+----------------------------------
+Optimized standing and added lying down.
+
 25.10.2018 (a_0.6) - Eirik Hemstad
 ----------------------------------
 Added functional standing.
