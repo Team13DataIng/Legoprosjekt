@@ -135,16 +135,18 @@ public class RobotKu {
         } else {
             throw new IllegalArgumentException("Invalid side. Please use either 'R' or 'L'.");
         }
-        
-        rBrick.forward(knee);
-        rBrick.forward(hip);
+		
+		rBrick.setSpeedAll(10);
+		
+        rBrick.rotateTo(knee, 0);
         delay(2000);
-        rBrick.backward(knee);
+        rBrick.rotateTo(hip, 40);
         delay(1000);
-        rBrick.backward(hip);
-        delay(1000);
-        rBrick.stop(knee);
-        rBrick.stop(hip);
+
+        rBrick.rotateTo(knee, 100);
+        rBrick.rotateTo(hip, 10);
+
+        delay(2000);
     }
 
     private static void stopWalk() {
@@ -161,76 +163,25 @@ public class RobotKu {
 			System.out.println("Got exception: " + e);
 		}
     }
-
-    private static void standUpAlt() {
-        System.out.println("Starting standing procedure.");
-
-        // Denne rekkefølgen er vesentlig
-        ev3.forward(MOTORS_ALL);
-        ev2.backward(MOTORS_ALL);
-
-		delay(STAND_HIP);
-
-        ev3.stop(MOTORS_HIP);
-        ev2.stop(MOTORS_HIP);
-
-        System.out.println("Hips are done!");
-        ev3.setSpeedAll(10);
-        ev2.setSpeedAll(30);
-		delay(3000);
-
-        ev3.stop(MOTORS_KNEE);
-        ev2.stop(MOTORS_KNEE);
-
-        System.out.println("Standing procedure completed.");
-    }
-
-    private static void standUpAlt2() {
-        System.out.println("Starting standing procedure.");
-
-        // Hofter:      Ca. 40 grader
-        // Knær:        Ca. 130 grader
-
-        // Denne rekkefølgen er vesentlig
-        ev2.setSpeedAll(30);
-        ev3.setSpeedAll(30);
-        ev2.forward(MOTORS_HIP);
-        ev3.backward(MOTORS_HIP);
-
-        delay(2000);
-
-        ev3.stop(MOTORS_HIP);
-        ev2.stop(MOTORS_HIP);
-
-        delay(2000);
-
-        ev2.forward(MOTORS_KNEE);
-        ev3.backward(MOTORS_KNEE);
-
-        delay(STAND_KNEE);
-
-        ev2.stop(MOTORS_KNEE);
-        ev3.stop(MOTORS_KNEE);
-
-        delay(2000);
-
-        System.out.println("Standing procedure completed.");
-    }
-
+   
     private static void standUp() {
         System.out.println("Starting standing procedure.");
+		
+		int hipRotationPoint = 10;
+		int kneeRotationPoint = 100;
 
         ev2.setSpeedAll(30);
         ev3.setSpeedAll(30);
 
-		ev2.rotateTo("A", 20);
-		ev2.rotateTo("C", 20);
-		ev2.rotateTo("B", 110);
-        ev2.rotateTo("D", 110);
-		ev3.rotateTo("A", 20);
-		ev3.rotateTo("C", 20);
-		ev3.rotateTo("B", 110);
-        ev3.rotateTo("D", 110);
+		ev2.rotateTo("C", hipRotationPoint);
+        ev2.rotateTo("A", hipRotationPoint);
+        ev3.rotateTo("C", hipRotationPoint);
+        ev3.rotateTo("A", hipRotationPoint);
+        
+        ev2.rotateTo("D", kneeRotationPoint);
+        ev2.rotateTo("B", kneeRotationPoint);
+        ev3.rotateTo("D", kneeRotationPoint);
+        ev3.rotateTo("B", kneeRotationPoint);
 
         delay(8000);
 
