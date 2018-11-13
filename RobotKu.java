@@ -22,12 +22,18 @@ public class RobotKu {
     private static Brick brick;
     private static TextLCD lcd;
     private static Port p1;
+    private static Port p2;
+    private static Port p3;
     private static SampleProvider touchSensor;
     private static float[] touchSample;
     private static SampleProvider angle;
+    private static SampleProvider angle2;
     private static float[] gyroSample;
-    public static EV3GyroSensor gyroSensor;
-
+    private static float[] gyroSample2;
+    private static EV3GyroSensor gyroSensor;
+    private static EV3GyroSensor gyroSensor2;
+    private static EV3UltrasonicSensor ultraSensor;
+    public static float[] ultraSample;
 
     //remote ev3
     private static RemoteBrick ev3;
@@ -50,25 +56,22 @@ public class RobotKu {
         setupEV3();     // Setup EV3 components
 
         standUp();
+        delay(5000);
+        System.out.println("Prøver å gå");
+        startWalk(ev2,"R");
+        startWalk(ev3,"L");
+        startWalk(ev2,"L");
+        startWalk(ev3,"R");
+
+
+
+        //calibrate();
         //playMoo();
         //playMoo();
-        // Start programrutine
-
-        /*
-        while (!checkForPush()) {
-            System.out.println("Walk cycle start.");
-            startWalk(ev2, "L");
-            startWalk(ev2, "R");
-            startWalk(ev3, "L");
-            startWalk(ev3, "R");
-        }
-        */
-
-        delay(1000);
-        hodeTest();
+        //delay(1000);
+        //hodeTest();
         //playMoo();
         System.out.println("Waiting 4 seconds");
-        calibrate();
 
         delay(4000);
 
@@ -107,14 +110,21 @@ public class RobotKu {
 
         try {
             p1 = brick.getPort("S1");
-            //p2 = brick.getPort("S2");
-            //p3 = brick.getPort("S3");
+            p2 = brick.getPort("S2");
+            p3 = brick.getPort("S3");
             //touchSensor = new EV3TouchSensor(p1);
 
             //gyro
     		gyroSensor = new EV3GyroSensor(p1);
             angle = gyroSensor.getAngleMode();
     		gyroSensor.reset();
+
+            gyroSensor2 = new EV3GyroSensor(p3);
+            angle2 = gyroSensor2.getAngleMode();
+            gyroSensor2.reset();
+            //ultrasonic
+            ultraSensor = new EV3UltrasonicSensor(p2);
+
         }
         catch (Exception ex) {
             System.out.println("Could not connect to sensor ports. Exception: " + ex);
@@ -175,18 +185,19 @@ public class RobotKu {
             throw new IllegalArgumentException("Invalid side. Please use either 'R' or 'L'.");
         }
 
-		rBrick.setSpeedAll(10);
+		rBrick.setSpeedAll(100);
 
-        rBrick.rotateTo(hip, 40);
+        rBrick.rotateTo(hip, -50);
         delay(1000);
-        rBrick.rotateTo(knee, 0);
+        rBrick.rotateTo(knee, -100);
         delay(2000);
 
 
         rBrick.rotateTo(knee, 100);
         rBrick.rotateTo(hip, 10);
 
-        delay(2000);
+        delay(3000);
+
     }
 
     private static void stopWalk() {
@@ -223,48 +234,108 @@ public class RobotKu {
         ev3.rotateTo("D", kneeRotationPoint);
         ev3.rotateTo("B", kneeRotationPoint);
 
-        delay(50);
-        calibrate();
+        delay(5000);   
+        //calibrate();
         System.out.println("Standing procedure completed");
     }
     private static void calibrate(){
         float currAngle = getAngle();
+        float currAngle2 = getAngle2();
+        float distance = getDistance();
+        float UPRIGHT_DISTANCE = 0.14f;
+        float UPRIGHT_TOLERANSE = 0.03f;
         int CAL_SPEED = 10;
-        /*
-            TING SOM MÅ TETSTES HER
-            1) ER BACKWARD RIKTIG RETNING?
-            2) FUNKER DET?
-            3) FART? JUSTER
-            4) ALLE LEDD ELLER BARE HOFTE/KNE
-        */
-        //ev3 er foran ev3 er bak
-        if(currAngle>0){
-            System.out.println("Calibrating. Lowering back.");
-            //øk forbein eller senk bakbein
+        while(currAngle>0||currAngle<0||currAngle2>0||currAngle2<0||distance<0.7||distance>0.72){
             ev3.setSpeedAll(CAL_SPEED);
-            ev3.backward(MOTORS_ALL);
-            while(currAngle>0){
-                currAngle = getAngle();
-            }
-            ev3.stop(MOTORS_ALL);
-
-        }
-        else if(currAngle<0){
-            System.out.println("Calibrating. Lowering front.");
-            //øk bakbein eller senk forbein
             ev2.setSpeedAll(CAL_SPEED);
-            ev2.backward(MOTORS_ALL);
-            while(currAngle<0){
-                currAngle = getAngle();
+            //ev3 er foran ev3 er bak
+            if(currAngle>0){
+                System.out.println("Calibrating. Lowering back.");
+                //øk forbein eller senk bakbein
+                ev3.backward(MOTORS_HIP);
+                while(currAngle>0){
+                    currAngle = getAngle();
+                }
+                ev3.stop(MOTORS_ALL);
+
             }
-            ev2.stop(MOTORS_ALL);
+            if(currAngle<0){
+                System.out.println("Calibrating. Lowering front.");
+                //øk bakbein eller senk forbein
+                ev2.backward(MOTORS_HIP);
+                while(currAngle<0){
+                    currAngle = getAngle();
+                }
+                ev2.stop(MOTORS_ALL);
+            }
+            if(currAngle2>0){
+                System.out.println("Calibrating. Lowering right.");
+                //senk bein høyre
+                ev3.backward("C");
+                ev2.backward("C");
+                while(currAngle2>0){
+                    currAngle = getAngle2();
+                }
+                ev3.stop("C");
+                ev2.stop("C");
+
+            }
+            if(currAngle2<0){
+                System.out.println("Calibrating. Lowering left.");
+                //senk bein venstre
+                ev3.backward("A");
+                ev2.backward("A");
+                while(currAngle2<0){
+                    currAngle = getAngle2();
+                }
+                ev3.stop("A");
+                ev2.stop("A");
+            }
+            if(distance>UPRIGHT_DISTANCE){
+                //senk alt
+                System.out.println("Calibrating. Lowering all.");
+                ev3.backward(MOTORS_ALL);
+                ev2.backward(MOTORS_ALL);
+                while(distance>UPRIGHT_DISTANCE){
+                    distance = getDistance();
+                    System.out.println(distance);
+                }
+                ev3.stop(MOTORS_ALL);
+                ev2.stop(MOTORS_ALL);
+            }
+            if(distance<UPRIGHT_DISTANCE-UPRIGHT_TOLERANSE){
+                //reis alt
+                System.out.println("Calibrating. Raising all.");
+                ev3.forward(MOTORS_ALL);
+                ev2.forward(MOTORS_ALL);
+                while(distance<UPRIGHT_DISTANCE-UPRIGHT_TOLERANSE){
+                    distance = getDistance();
+                    System.out.println(distance);
+                }
+                ev3.stop(MOTORS_ALL);
+                ev2.stop(MOTORS_ALL);
+            }
         }
     }
+    
     private static float getAngle(){
 		gyroSample = new float[angle.sampleSize()];
 		angle.fetchSample(gyroSample, 0);
 		return gyroSample[0];
     }
+    private static float getAngle2(){
+        gyroSample2 = new float[angle2.sampleSize()];
+        angle2.fetchSample(gyroSample2, 0);
+        return gyroSample2[0];
+    }
+
+    private static float getDistance(){
+        SampleProvider distance = ultraSensor.getDistanceMode();
+        ultraSample = new float[distance.sampleSize()];
+        distance.fetchSample(ultraSample, 0);
+        return ultraSample[0];
+    }
+
     private static void lieDown() {
         System.out.println("Starting liedown procedure.");
 

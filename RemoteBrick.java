@@ -79,7 +79,6 @@ public class RemoteBrick {
     public void forward(String motor){
         for(int i = 0; i < motorCount; i++) {
             if(motor.equals(bokstaver[i])) {
-                System.out.println(remoteName + ": Motor " + motor + " forwards");
                 motors[i].forward();
             }
         }
@@ -89,7 +88,6 @@ public class RemoteBrick {
         for(int i = 0; i < motorCount; i++){
             for(int j = 0; j < motor.length; j++){
                 if(motor[j].equals(bokstaver[i])){
-                    System.out.println(remoteName + ": Motor " + motor[j] + " forwards");
                     motors[j].forward();
                 }
             }
@@ -99,7 +97,6 @@ public class RemoteBrick {
     public void backward(String motor){
         for(int i = 0; i < motorCount; i++){
             if(motor.equals(bokstaver[i])){
-                System.out.println(remoteName + ": Motor "+motor+" backwards");
                 motors[i].backward();
             }
         }
@@ -107,12 +104,8 @@ public class RemoteBrick {
 
     public void backward(String[] motor){
         for(int i = 0; i < motorCount; i++) {
-            System.out.println("i: " + i);
             for(int j = 0; j < motor.length; j++) {
-                System.out.println("j: " + j);
                 if(motor[j].equals(bokstaver[i])) {
-                    System.out.println("i: " + i + ", j: " + j);
-                    System.out.println(remoteName + ": Motor " + motor[j] + " backwards");
                     motors[j].backward();
                 }
             }
@@ -122,7 +115,6 @@ public class RemoteBrick {
     public void rotateTo(String motor, int degrees) {
         for(int i = 0; i < motorCount; i++){
             if(motor.equals(bokstaver[i])){
-                System.out.println(remoteName + ": Motor " + motor + " rotates to " + degrees);
                 motors[i].rotateTo(degrees, true);
             }
         }
@@ -131,7 +123,6 @@ public class RemoteBrick {
     public void stop(String motor){
         for(int i = 0; i < motorCount; i++){
             if(motor.equals(bokstaver[i])){
-                System.out.println(remoteName + ": Motor "+motor+" stop");
                 motors[i].stop();
             }
         }
@@ -141,7 +132,6 @@ public class RemoteBrick {
         for(int i = 0; i < motorCount; i++){
             for(int j = 0; j < motor.length; j++){
                 if(motor[j].equals(bokstaver[i])){
-                    System.out.println(remoteName + ": Motor " + motor[j] + " stop");
                     motors[j].stop();
                 }
             }
@@ -151,7 +141,6 @@ public class RemoteBrick {
     public void rotate(String motor, int deg){
         for(int i = 0; i < motorCount; i++){
             if(motor.equals(bokstaver[i])){
-                System.out.println(remoteName + ": Motor " + motor + " rotate " + deg + " deg");
                 motors[i].rotate(deg);
             }
         }
