@@ -120,6 +120,14 @@ public class RemoteBrick {
         }
     }
 
+    public void rotateTo(String motor, int degrees, boolean wait) {
+        for(int i = 0; i < motorCount; i++){
+            if(motor.equals(bokstaver[i])){
+                motors[i].rotateTo(degrees, wait);
+            }
+        }
+    }
+
     public void stop(String motor){
         for(int i = 0; i < motorCount; i++){
             if(motor.equals(bokstaver[i])){

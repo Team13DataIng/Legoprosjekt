@@ -40,7 +40,7 @@ public class RobotKu {
     private static RemoteBrick ev2;
 
     // Initialize constants
-    private static final String VERSION_NUMBER = "a_0.7";
+    private static final String VERSION_NUMBER = "1.0.1";
     private static final int LEG_SPEED = 10;
     private static final int STAND_HIP = 800;
 	private static final int STAND_KNEE = 2200;
@@ -55,33 +55,33 @@ public class RobotKu {
 
         setupEV3();     // Setup EV3 components
 
-        standUp();
+        standUp();      // Engage standing sequence
         delay(5000);
         System.out.println("Prøver å gå");
-        startWalk(ev2,"R");
-        startWalk(ev3,"L");
-        startWalk(ev2,"L");
-        startWalk(ev3,"R");
 
+        playMoo();      // Play the moo
 
+        Motor.A.setSpeed(300);
 
-        //calibrate();
-        //playMoo();
-        //playMoo();
-        //delay(1000);
-        //hodeTest();
-        //playMoo();
-        System.out.println("Waiting 4 seconds");
+        while (!checkForPush()) {
+            Motor.A.rotate(60);
+            while(Motor.A.isMoving()){
+                //wait
+            }
+            Motor.A.rotate(-60);
+            while(Motor.A.isMoving()){
+                //wait
+            }
+            walk();     // While button is not pushed, walk
+        }
 
-        delay(4000);
-
-        lieDown();
+        lieDown();      // When walking is finished, lie down
 
         delay(3000);
 
         // Slutt programrutine
 
-        shutOff();
+        shutOff();      // Shut off cow
     }
 
     // Methods
@@ -112,7 +112,7 @@ public class RobotKu {
             p1 = brick.getPort("S1");
             p2 = brick.getPort("S2");
             p3 = brick.getPort("S3");
-            //touchSensor = new EV3TouchSensor(p1);
+            touchSensor = new EV3TouchSensor(p1);
 
             //gyro
     		gyroSensor = new EV3GyroSensor(p1);
@@ -136,75 +136,37 @@ public class RobotKu {
     private static void playMoo(){
         ev2.moo();
     }
-    private static void hodeTest(){
-        Motor.A.setSpeed(300);
-        Motor.B.setSpeed(50);
-        Motor.B.rotate(100);
-        while(Motor.B.isMoving()){
-            //wait
-        }
-        Motor.B.rotate(-100);
-        while(Motor.B.isMoving()){
 
-        }
-        for(int i = 0;i<15;i++){
-            Motor.A.rotate(60);
-            while(Motor.A.isMoving()){
-                //wait
-            }
-            Motor.A.rotate(-60);
-            while(Motor.A.isMoving()){
-                //wait
-            }
-        }
-    }
     private static void shutOff(){
         System.out.println("Adieu");
         ev2.closeAll();
         ev3.closeAll();
     }
-    private static void startWalk(RemoteBrick rBrick, String side) {
-        /*
-        1: Rotate knee backwards
-        2: Rotate hip upwards
-        3: Rotate knee forward
-        4: Rotate hip downwards
-        */
-        String hip;
-        String knee;
 
-        if (side.equals("L")) {
-            hip = "A";
-            knee = "B";
-        }
-        else if (side.equals("R")) {
-            hip = "C";
-            knee = "D";
-        }
-        else {
-            throw new IllegalArgumentException("Invalid side. Please use either 'R' or 'L'.");
-        }
+    private static void walk() {
+        ev2.setSpeedAll(70);
+        ev3.setSpeedAll(70);
 
-		rBrick.setSpeedAll(100);
+        ev2.rotateTo("A", 90);
+        ev2.rotateTo("B", 160, false);
+        ev3.rotateTo("D", 40);
+        ev3.rotateTo("C", 0, false);
 
-        rBrick.rotateTo(hip, -50);
-        delay(1000);
-        rBrick.rotateTo(knee, -100);
-        delay(2000);
+        ev3.rotateTo("C", 30, false);
+        ev3.rotateTo("D", 110, false);
+        ev2.rotateTo("A", 30, false);
+        ev2.rotateTo("B", 110, false);
 
+        ev3.rotateTo("B", 40);
+        ev3.rotateTo("A", 0, false);
+        ev2.rotateTo("C", 90);
+        ev2.rotateTo("D", 160, false);
 
-        rBrick.rotateTo(knee, 100);
-        rBrick.rotateTo(hip, 10);
-
-        delay(3000);
-
+        ev3.rotateTo("A", 30, false);
+        ev3.rotateTo("B", 110, false);
+        ev2.rotateTo("C", 30, false);
+        ev2.rotateTo("D", 110, false);
     }
-
-    private static void stopWalk() {
-
-    }
-
-
 
     private static void delay(int duration){
         try {
@@ -218,8 +180,8 @@ public class RobotKu {
     private static void standUp() {
         System.out.println("Starting standing procedure.");
 
-		int hipRotationPoint = 10;
-		int kneeRotationPoint = 100;
+		int hipRotationPoint = 30;
+		int kneeRotationPoint = 110;
 
         ev2.setSpeedAll(30);
         ev3.setSpeedAll(30);
@@ -238,6 +200,63 @@ public class RobotKu {
         //calibrate();
         System.out.println("Standing procedure completed");
     }
+
+    
+    
+    
+
+    private static void lieDown() {
+        System.out.println("Starting liedown procedure.");
+
+        ev2.setSpeedAll(30);
+        ev3.setSpeedAll(30);
+
+        ev2.rotateTo("A", 0);
+        ev2.rotateTo("C", 0);
+        ev3.rotateTo("A", 0);
+        ev3.rotateTo("C", 0);
+        ev2.rotateTo("B", 0);
+        ev2.rotateTo("D", 0);
+        ev3.rotateTo("B", 0);
+        ev3.rotateTo("D", 0);
+
+        delay(8000);
+
+        System.out.println("Liedown procedure completed.");
+    }
+
+    private static boolean checkForPush() {
+        touchSample = new float[touchSensor.sampleSize()];
+
+        if (touchSample != null && touchSample.length > 0) {
+            touchSensor.fetchSample(touchSample, 0);
+            if (touchSample[0] > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Deprecated method
+
+    private static float getAngle(){
+        gyroSample = new float[angle.sampleSize()];
+        angle.fetchSample(gyroSample, 0);
+        return gyroSample[0];
+    }
+    private static float getAngle2(){
+        gyroSample2 = new float[angle2.sampleSize()];
+        angle2.fetchSample(gyroSample2, 0);
+        return gyroSample2[0];
+    }
+
+    private static float getDistance(){
+        SampleProvider distance = ultraSensor.getDistanceMode();
+        ultraSample = new float[distance.sampleSize()];
+        distance.fetchSample(ultraSample, 0);
+        return ultraSample[0];
+    }
+
     private static void calibrate(){
         float currAngle = getAngle();
         float currAngle2 = getAngle2();
@@ -317,70 +336,27 @@ public class RobotKu {
             }
         }
     }
-    
-    private static float getAngle(){
-		gyroSample = new float[angle.sampleSize()];
-		angle.fetchSample(gyroSample, 0);
-		return gyroSample[0];
-    }
-    private static float getAngle2(){
-        gyroSample2 = new float[angle2.sampleSize()];
-        angle2.fetchSample(gyroSample2, 0);
-        return gyroSample2[0];
-    }
 
-    private static float getDistance(){
-        SampleProvider distance = ultraSensor.getDistanceMode();
-        ultraSample = new float[distance.sampleSize()];
-        distance.fetchSample(ultraSample, 0);
-        return ultraSample[0];
-    }
+    private static void hodeTest(){
+        Motor.A.setSpeed(300);
+        Motor.B.setSpeed(50);
+        Motor.B.rotate(100);
+        while(Motor.B.isMoving()){
+            //wait
+        }
+        Motor.B.rotate(-100);
+        while(Motor.B.isMoving()){
 
-    private static void lieDown() {
-        System.out.println("Starting liedown procedure.");
-
-        ev2.setSpeedAll(30);
-        ev3.setSpeedAll(30);
-
-        ev2.rotateTo("A", 0);
-        ev2.rotateTo("C", 0);
-        ev3.rotateTo("A", 0);
-        ev3.rotateTo("C", 0);
-        ev2.rotateTo("B", 0);
-        ev2.rotateTo("D", 0);
-        ev3.rotateTo("B", 0);
-        ev3.rotateTo("D", 0);
-
-        delay(8000);
-
-        System.out.println("Liedown procedure completed.");
-    }
-
-    private static boolean checkForPush() {
-        touchSample = new float[touchSensor.sampleSize()];
-
-        if (touchSample != null && touchSample.length > 0) {
-            touchSensor.fetchSample(touchSample, 0);
-            if (touchSample[0] > 0) {
-                return true;
+        }
+        for(int i = 0;i<15;i++){
+            Motor.A.rotate(60);
+            while(Motor.A.isMoving()){
+                //wait
+            }
+            Motor.A.rotate(-60);
+            while(Motor.A.isMoving()){
+                //wait
             }
         }
-        return false;
-    }
-
-    private static void rotateHead() {
-
-    }
-
-    private static void rotateTorso() {
-
-    }
-
-    private static int scanForward() {
-        return 0;
-    }
-
-    private static int scanDownward() {
-        return 0;
     }
 }
