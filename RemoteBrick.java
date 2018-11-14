@@ -164,7 +164,7 @@ public class RemoteBrick {
 		int i = random.nextInt(5);
 		System.out.println("Spiller lyd: "+files[0]);
 		//duration er tiden det tar å spille av lyden
-		int dur = Sound.playSample(files[i]);
+		int dur = Sound.playSample(files[0]);
 		if(dur<0){
 			System.out.println("En feil har skjedd ved avspilling av lyd: "+files[i]);
 		}

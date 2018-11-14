@@ -40,7 +40,7 @@ public class RobotKu {
     private static RemoteBrick ev2;
 
     // Initialize constants
-    private static final String VERSION_NUMBER = "1.0.3";
+    private static final String VERSION_NUMBER = "1.0.5";
     private static final int LEG_SPEED = 10;
     private static final int STAND_HIP = 800;
 	private static final int STAND_KNEE = 2200;
@@ -145,8 +145,8 @@ public class RobotKu {
     }
 
     private static void walk() {
-        ev2.setSpeedAll(80);
-        ev3.setSpeedAll(80);
+        ev2.setSpeedAll(70);
+        ev3.setSpeedAll(70);
 
         ev2.rotateTo("A", 90);
         ev2.rotateTo("B", 160, false);
