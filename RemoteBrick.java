@@ -162,7 +162,7 @@ public class RemoteBrick {
     }
     public void moo() {
 		int i = random.nextInt(5);
-		System.out.println("Spiller lyd: "+files[i]);
+		System.out.println("Spiller lyd: "+files[0]);
 		//duration er tiden det tar å spille av lyden
 		int dur = Sound.playSample(files[i]);
 		if(dur<0){
