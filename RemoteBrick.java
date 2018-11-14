@@ -13,13 +13,12 @@ I koden styrer dere en motor slik:
 */
 import lejos.hardware.Brick;
 import lejos.hardware.BrickFinder;
-import lejos.hardware.motor.*;
-import lejos.robotics.*;
-import lejos.remote.ev3.*;
+import lejos.hardware.motor.Motor;
+import lejos.robotics.RegulatedMotor;
+import lejos.remote.ev3.RemoteRequestEV3;
 import lejos.hardware.Sound;
 import lejos.hardware.Audio;
 import java.io.File;
-import java.util.Random;
 
 public class RemoteBrick {
     public String remoteName;
@@ -29,8 +28,7 @@ public class RemoteBrick {
     public String[] bokstaver = {"A","B","C","D"};
     //lyd
     public Audio audio;
-    public File[] files = new File[5];
-	public Random random = new Random();
+    public File file = new File("moo0.wav");
 
     public RemoteBrick(String name, int motorCount){
         this.motorCount = motorCount;
@@ -44,29 +42,26 @@ public class RemoteBrick {
             System.out.println("Initializing motors at "+remoteName);
             this.motors = new RegulatedMotor[motorCount];
             for(int i=0;i<motorCount;i++){
-                this.motors[i] = brick.createRegulatedMotor(bokstaver[i], 'L');
+                this.motors[i] = brick.createRegulatedMotor(bokstaver[i], 'L'); //L er typen motor
             }
             //lyd
             audio = this.brick.getAudio();
             audio.setVolume(100);
-            for(int i = 0;i<files.length;i++){
-    			String fileName = "moo"+i+".wav";
-    			files[i] = new File(fileName);
-    		}
+
         }
 
         catch (Exception e){
             System.out.println("Got exception " + e);
         }
     }
-
+    //setter farten for alle motorene
     public void setSpeedAll(int speed){
         System.out.println(remoteName + ": Setting speed for all motors: " + speed);
         for(int i = 0; i < motorCount; i++) {
             motors[i].setSpeed(speed);
         }
     }
-
+    //setter farten for en enkelt motor
     public void setSpeed(String motor, int speed){
         for(int i = 0;i < motorCount; i++){
             if(motor.equals(bokstaver[i])){
@@ -75,7 +70,7 @@ public class RemoteBrick {
             }
         }
     }
-
+    //Får én motor til å kjøre forover
     public void forward(String motor){
         for(int i = 0; i < motorCount; i++) {
             if(motor.equals(bokstaver[i])) {
@@ -83,7 +78,7 @@ public class RemoteBrick {
             }
         }
     }
-
+    //får en array med motorer til å kjøre forover. Her må bokstaven samsvare med array, så om du vil at A og C skal kjøre må du sende arrayen {"A","0","C","0"}.
     public void forward(String[] motor){
         for(int i = 0; i < motorCount; i++){
             for(int j = 0; j < motor.length; j++){
@@ -160,21 +155,21 @@ public class RemoteBrick {
             motors[i].close();
         }
     }
+    //Spiller av en moo-lyd
     public void moo() {
-		int i = random.nextInt(5);
-		System.out.println("Spiller lyd: "+files[0]);
-		//duration er tiden det tar å spille av lyden
-		int dur = Sound.playSample(files[0]);
-		if(dur<0){
-			System.out.println("En feil har skjedd ved avspilling av lyd: "+files[i]);
-		}
-		try {
-			Thread.sleep(dur+10);
-		}
-		catch(Exception e){
+        System.out.println("Spiller lyd: "+file);
+        //duration er tiden det tar å spille av lyden
+        int dur = Sound.playSample(file);
+        if(dur<0){
+            System.out.println("En feil har skjedd ved avspilling av lyd: "+file);
+        }
+        try {
+            Thread.sleep(dur+10);
+        }
+        catch(Exception e){
 
-		}
-	}
+        }
+    }
     public void remoteMotorTest(){
         System.out.println("Setting speed.");
         for(int i=0;i<motors.length;i++){
