@@ -1,6 +1,8 @@
 /*
  * Creation date:   17.10.2018
  * Authors:         Cato Bakken, Eirik Hemstad, Jonas B. Jacobsen, Torbjørn B. Lauvvik, Torstein H. Sundfær
+ *
+ * This class blablabla
 */
 
 import lejos.hardware.motor.Motor;
@@ -13,118 +15,66 @@ import lejos.hardware.sensor.EV3GyroSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.EV3TouchSensor;
 
-
-
 public class RobotKu {
 
     // Initialize EV3 objects
     private static Brick brick;
     private static TextLCD lcd;
     private static Port p1;
-    private static Port p2;
-    private static Port p3;
     private static SampleProvider touchSensor;
     private static float[] touchSample;
-    private static SampleProvider angle;
-    private static SampleProvider angle2;
-    private static float[] gyroSample;
-    private static float[] gyroSample2;
-    private static EV3GyroSensor gyroSensor;
-    private static EV3GyroSensor gyroSensor2;
-    private static EV3UltrasonicSensor ultraSensor;
-    public static float[] ultraSample;
 
     //remote ev3
     private static RemoteBrick ev3;
     private static RemoteBrick ev2;
 
     // Initialize constants
-    private static final String VERSION_NUMBER = "1.0.5";
-    private static final int LEG_SPEED = 10;
-    private static final int STAND_HIP = 800;
-	private static final int STAND_KNEE = 2200;
-    private static final String[] MOTORS_ALL = {"A","B","C","D"};
-    private static final String[] MOTORS_HIP = {"A","0","C","0"};
-    private static final String[] MOTORS_KNEE = {"0","B","0","D"};
+    private static final String VERSION_NUMBER = "1.0.6";
 
-    public static void main(String[] args) {
-        System.out.println("Robotku version " + VERSION_NUMBER);
+    // Leg constants
+    private static final int WALK_SPEED = 70;
+    private static final int STAND_SPEED = 30;
+    private static final int STAND_HIP = 30;
+	private static final int STAND_KNEE = 110;
 
-        System.out.println("Test 1");
+    // The leg motors are represented by strings
+    // Note that there are one set of legs per EV3 brick
+    private static final String LEFT_HIP = "A";
+    private static final String LEFT_KNEE = "B";
+    private static final String RIGHT_HIP = "C";
+    private static final String RIGHT_KNEE = "D";
 
-        setupEV3();     // Setup EV3 components
+    // Private methods start
 
-        standUp();      // Engage standing sequence
-        delay(5000);
-        System.out.println("Prøver å gå");
-
-        //playMoo();      // Play the moo
-
-        Motor.A.setSpeed(300);
-
-        while (!checkForPush()) {
-            playMoo();
-            Motor.A.rotate(60);
-            while(Motor.A.isMoving()){
-                //wait
-            }
-            Motor.A.rotate(-60);
-            while(Motor.A.isMoving()){
-                //wait
-            }
-            walk();     // While button is not pushed, walk
-        }
-
-        lieDown();      // When walking is finished, lie down
-
-        delay(3000);
-
-        // Slutt programrutine
-
-        shutOff();      // Shut off cow
-    }
-
-    // Methods
-
-    // This method sets up the EV3 components
+    /**
+    Sets up all the bricks, motors and sensors that the program will use
+    */
     private static void setupEV3() {
         System.out.println("Initializing setup.");
 
         System.out.println("Connecting to remote EV3 bricks.");
         try {
-            ev3 = new RemoteBrick("EV3", 4); //bakbein       //Andre parameter er anntall motorer som skal settes opp.
-            ev2 = new RemoteBrick("EV2", 4);
+            ev3 = new RemoteBrick("EV3", 4);        // Brick for back legs, second value is number of motors
+            ev2 = new RemoteBrick("EV2", 4);        // Brick for front legs
 
-            ev3.setSpeedAll(LEG_SPEED);
-		    ev2.setSpeedAll(LEG_SPEED);
+            ev3.setSpeedAll(STAND_SPEED);
+		    ev2.setSpeedAll(STAND_SPEED);
         }
         catch (Exception e) {
             System.out.println("Could not connect to other EV3 bricks. Please ensure Bluetooth connection.");
             System.out.println(e.toString());
         }
 
-        brick = BrickFinder.getDefault();      // Set the main EV3 brick
+        // Set the main EV3 brick
+        brick = BrickFinder.getDefault();      
 
-        // TODO: Initialize sensor ports
+        // Initialize sensor ports
         System.out.println("Initializing sensor ports.");
 
         try {
+            // Touch sensor
             p1 = brick.getPort("S1");
-            p2 = brick.getPort("S2");
-            p3 = brick.getPort("S3");
             touchSensor = new EV3TouchSensor(p1);
-
-            //gyro
-    		gyroSensor = new EV3GyroSensor(p1);
-            angle = gyroSensor.getAngleMode();
-    		gyroSensor.reset();
-
-            gyroSensor2 = new EV3GyroSensor(p3);
-            angle2 = gyroSensor2.getAngleMode();
-            gyroSensor2.reset();
-            //ultrasonic
-            ultraSensor = new EV3UltrasonicSensor(p2);
-
         }
         catch (Exception ex) {
             System.out.println("Could not connect to sensor ports. Exception: " + ex);
@@ -133,41 +83,25 @@ public class RobotKu {
         System.out.println("Setup complete.");
     }
 
-    private static void playMoo(){
-        ev2.moo();
+    /**
+    Plays a 'moo' sound effect at the specified remote brick
+    */
+    private static void playMoo(RemoteBrick rBrick){
+        rBrick.moo();
     }
 
+    /**
+    Shuts off the robot
+    */
     private static void shutOff(){
         System.out.println("Adieu");
         ev2.closeAll();
         ev3.closeAll();
     }
 
-    private static void walk() {
-        ev2.setSpeedAll(70);
-        ev3.setSpeedAll(70);
-
-        ev2.rotateTo("A", 90);
-        ev2.rotateTo("B", 160, false);
-        ev3.rotateTo("D", 40);
-        ev3.rotateTo("C", 0, false);
-
-        ev3.rotateTo("C", 30, false);
-        ev3.rotateTo("D", 110, false);
-        ev2.rotateTo("A", 30, false);
-        ev2.rotateTo("B", 110, false);
-
-        ev3.rotateTo("B", 40);
-        ev3.rotateTo("A", 0, false);
-        ev2.rotateTo("C", 90);
-        ev2.rotateTo("D", 160, false);
-
-        ev3.rotateTo("A", 30, false);
-        ev3.rotateTo("B", 110, false);
-        ev2.rotateTo("C", 30, false);
-        ev2.rotateTo("D", 110, false);
-    }
-
+    /*
+    Makes the application pause for the specified time (milliseconds)
+    */
     private static void delay(int duration){
         try {
 			Thread.sleep(duration);
@@ -177,54 +111,91 @@ public class RobotKu {
 		}
     }
 
+    /*
+    Makes the robot stand up
+    When raising up the robot, all motors rotate to the standing position
+    The order of the motor routine may be crucial to maintaining balance through the process
+    It is important that the robot is in the standard resting position
+    */
     private static void standUp() {
         System.out.println("Starting standing procedure.");
 
-		int hipRotationPoint = 30;
-		int kneeRotationPoint = 110;
+        ev2.setSpeedAll(STAND_SPEED);
+        ev3.setSpeedAll(STAND_SPEED);
 
-        ev2.setSpeedAll(30);
-        ev3.setSpeedAll(30);
+		ev2.rotateTo(RIGHT_HIP, STAND_HIP);
+        ev2.rotateTo(LEFT_HIP, STAND_HIP);
+        ev3.rotateTo(RIGHT_HIP, STAND_HIP);
+        ev3.rotateTo(LEFT_HIP, STAND_HIP);
 
-		ev2.rotateTo("C", hipRotationPoint);
-        ev2.rotateTo("A", hipRotationPoint);
-        ev3.rotateTo("C", hipRotationPoint);
-        ev3.rotateTo("A", hipRotationPoint);
-
-        ev2.rotateTo("D", kneeRotationPoint);
-        ev2.rotateTo("B", kneeRotationPoint);
-        ev3.rotateTo("D", kneeRotationPoint);
-        ev3.rotateTo("B", kneeRotationPoint);
+        ev2.rotateTo(RIGHT_KNEE, STAND_KNEE);
+        ev2.rotateTo(LEFT_KNEE, STAND_KNEE);
+        ev3.rotateTo(RIGHT_KNEE, STAND_KNEE);
+        ev3.rotateTo(LEFT_KNEE, STAND_KNEE);
 
         delay(5000);   
         //calibrate();
         System.out.println("Standing procedure completed");
-    }
+    }    
 
-    
-    
-    
-
+    /**
+    Makes the robot lie down. The robot rotates all leg motors back to their starting position. 
+    If the robot stood up from the resting position, it should return to this.
+    */
     private static void lieDown() {
         System.out.println("Starting liedown procedure.");
 
-        ev2.setSpeedAll(30);
-        ev3.setSpeedAll(30);
+        ev2.setSpeedAll(STAND_SPEED);
+        ev3.setSpeedAll(STAND_SPEED);
 
-        ev2.rotateTo("A", 0);
-        ev2.rotateTo("C", 0);
-        ev3.rotateTo("A", 0);
-        ev3.rotateTo("C", 0);
-        ev2.rotateTo("B", 0);
-        ev2.rotateTo("D", 0);
-        ev3.rotateTo("B", 0);
-        ev3.rotateTo("D", 0);
+        ev2.rotateTo(LEFT_HIP, 0);
+        ev2.rotateTo(RIGHT_HIP, 0);
+        ev3.rotateTo(LEFT_HIP, 0);
+        ev3.rotateTo(RIGHT_HIP, 0);
+        ev2.rotateTo(LEFT_KNEE, 0);
+        ev2.rotateTo(RIGHT_KNEE, 0);
+        ev3.rotateTo(LEFT_KNEE, 0);
+        ev3.rotateTo(RIGHT_KNEE, 0);
 
         delay(8000);
 
         System.out.println("Liedown procedure completed.");
     }
 
+    /**
+    Makes the robot walk two steps forward
+    When walking, the robot lifts two of its legs (one front, one back, opposite to each other) at a time, before setting them down
+    This process is a little clunky, and the robot has some issues maintaining balance throughout. The forward speed is also very slow.
+    This may be improved upon by careful observation and testing, but the team ran out of time to optimize this further for v1.0.
+    */
+    private static void walk() {
+        ev2.setSpeedAll(WALK_SPEED);
+        ev3.setSpeedAll(WALK_SPEED);
+
+        ev2.rotateTo(LEFT_HIP, 90);
+        ev2.rotateTo(LEFT_KNEE, 160, false);
+        ev3.rotateTo(RIGHT_KNEE, 40);
+        ev3.rotateTo(RIGHT_HIP, 0, false);
+
+        ev3.rotateTo(RIGHT_HIP, STAND_HIP, false);
+        ev3.rotateTo(RIGHT_KNEE, STAND_KNEE, false);
+        ev2.rotateTo(LEFT_HIP, STAND_HIP, false);
+        ev2.rotateTo(LEFT_KNEE, STAND_KNEE, false);
+
+        ev3.rotateTo(LEFT_KNEE, 40);
+        ev3.rotateTo(LEFT_HIP, 0, false);
+        ev2.rotateTo(RIGHT_HIP, 90);
+        ev2.rotateTo(RIGHT_KNEE, 160, false);
+
+        ev3.rotateTo(LEFT_HIP, STAND_HIP, false);
+        ev3.rotateTo(LEFT_KNEE, STAND_KNEE, false);
+        ev2.rotateTo(RIGHT_HIP, STAND_HIP, false);
+        ev2.rotateTo(RIGHT_KNEE, STAND_KNEE, false);
+    }
+
+    /**
+    Uses the touch sensor to check for touch. If it does register a touch, return true
+    */
     private static boolean checkForPush() {
         touchSample = new float[touchSensor.sampleSize()];
 
@@ -237,118 +208,30 @@ public class RobotKu {
         return false;
     }
 
-    // Deprecated method
+    // Private methods end
 
-    private static float getAngle(){
-        gyroSample = new float[angle.sampleSize()];
-        angle.fetchSample(gyroSample, 0);
-        return gyroSample[0];
-    }
-    private static float getAngle2(){
-        gyroSample2 = new float[angle2.sampleSize()];
-        angle2.fetchSample(gyroSample2, 0);
-        return gyroSample2[0];
-    }
+    /**
+    Main method
+    */
+    public static void main(String[] args) {
+        System.out.println("Robotku version " + VERSION_NUMBER);
 
-    private static float getDistance(){
-        SampleProvider distance = ultraSensor.getDistanceMode();
-        ultraSample = new float[distance.sampleSize()];
-        distance.fetchSample(ultraSample, 0);
-        return ultraSample[0];
-    }
+        // Setup EV3 components
+        setupEV3();     
 
-    private static void calibrate(){
-        float currAngle = getAngle();
-        float currAngle2 = getAngle2();
-        float distance = getDistance();
-        float UPRIGHT_DISTANCE = 0.14f;
-        float UPRIGHT_TOLERANSE = 0.03f;
-        int CAL_SPEED = 10;
-        while(currAngle>0||currAngle<0||currAngle2>0||currAngle2<0||distance<0.7||distance>0.72){
-            ev3.setSpeedAll(CAL_SPEED);
-            ev2.setSpeedAll(CAL_SPEED);
-            //ev3 er foran ev3 er bak
-            if(currAngle>0){
-                System.out.println("Calibrating. Lowering back.");
-                //øk forbein eller senk bakbein
-                ev3.backward(MOTORS_HIP);
-                while(currAngle>0){
-                    currAngle = getAngle();
-                }
-                ev3.stop(MOTORS_ALL);
+        // Engage standing sequence
+        standUp();
+        delay(5000);
 
-            }
-            if(currAngle<0){
-                System.out.println("Calibrating. Lowering front.");
-                //øk bakbein eller senk forbein
-                ev2.backward(MOTORS_HIP);
-                while(currAngle<0){
-                    currAngle = getAngle();
-                }
-                ev2.stop(MOTORS_ALL);
-            }
-            if(currAngle2>0){
-                System.out.println("Calibrating. Lowering right.");
-                //senk bein høyre
-                ev3.backward("C");
-                ev2.backward("C");
-                while(currAngle2>0){
-                    currAngle = getAngle2();
-                }
-                ev3.stop("C");
-                ev2.stop("C");
-
-            }
-            if(currAngle2<0){
-                System.out.println("Calibrating. Lowering left.");
-                //senk bein venstre
-                ev3.backward("A");
-                ev2.backward("A");
-                while(currAngle2<0){
-                    currAngle = getAngle2();
-                }
-                ev3.stop("A");
-                ev2.stop("A");
-            }
-            if(distance>UPRIGHT_DISTANCE){
-                //senk alt
-                System.out.println("Calibrating. Lowering all.");
-                ev3.backward(MOTORS_ALL);
-                ev2.backward(MOTORS_ALL);
-                while(distance>UPRIGHT_DISTANCE){
-                    distance = getDistance();
-                    System.out.println(distance);
-                }
-                ev3.stop(MOTORS_ALL);
-                ev2.stop(MOTORS_ALL);
-            }
-            if(distance<UPRIGHT_DISTANCE-UPRIGHT_TOLERANSE){
-                //reis alt
-                System.out.println("Calibrating. Raising all.");
-                ev3.forward(MOTORS_ALL);
-                ev2.forward(MOTORS_ALL);
-                while(distance<UPRIGHT_DISTANCE-UPRIGHT_TOLERANSE){
-                    distance = getDistance();
-                    System.out.println(distance);
-                }
-                ev3.stop(MOTORS_ALL);
-                ev2.stop(MOTORS_ALL);
-            }
-        }
-    }
-
-    private static void hodeTest(){
+        // Set speed for mouth motor
         Motor.A.setSpeed(300);
-        Motor.B.setSpeed(50);
-        Motor.B.rotate(100);
-        while(Motor.B.isMoving()){
-            //wait
-        }
-        Motor.B.rotate(-100);
-        while(Motor.B.isMoving()){
 
-        }
-        for(int i = 0;i<15;i++){
+        // Run while the push sensor is not pushed
+        while (!checkForPush()) {
+            // Play moo sound
+            playMoo(ev2);
+
+            // Open and close the mouth
             Motor.A.rotate(60);
             while(Motor.A.isMoving()){
                 //wait
@@ -357,6 +240,16 @@ public class RobotKu {
             while(Motor.A.isMoving()){
                 //wait
             }
+
+            // Walk two steps
+            walk();
         }
+
+        // When walking is finished, lie down
+        lieDown();      
+        delay(3000);
+
+        // Shut off cow
+        shutOff();      
     }
 }

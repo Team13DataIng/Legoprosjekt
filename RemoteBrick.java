@@ -30,6 +30,9 @@ public class RemoteBrick {
     public Audio audio;
     public File file = new File("moo0.wav");
 
+    /**
+    Constructor
+    */
     public RemoteBrick(String name, int motorCount){
         this.motorCount = motorCount;
         this.remoteName = name;
@@ -54,6 +57,7 @@ public class RemoteBrick {
             System.out.println("Got exception " + e);
         }
     }
+
     //setter farten for alle motorene
     public void setSpeedAll(int speed){
         System.out.println(remoteName + ": Setting speed for all motors: " + speed);
@@ -61,6 +65,7 @@ public class RemoteBrick {
             motors[i].setSpeed(speed);
         }
     }
+
     //setter farten for en enkelt motor
     public void setSpeed(String motor, int speed){
         for(int i = 0;i < motorCount; i++){
@@ -70,6 +75,7 @@ public class RemoteBrick {
             }
         }
     }
+
     //Får én motor til å kjøre forover
     public void forward(String motor){
         for(int i = 0; i < motorCount; i++) {
@@ -78,6 +84,7 @@ public class RemoteBrick {
             }
         }
     }
+
     //får en array med motorer til å kjøre forover. Her må bokstaven samsvare med array, så om du vil at A og C skal kjøre må du sende arrayen {"A","0","C","0"}.
     public void forward(String[] motor){
         for(int i = 0; i < motorCount; i++){
@@ -88,6 +95,7 @@ public class RemoteBrick {
             }
         }
     }
+
 
     public void backward(String motor){
         for(int i = 0; i < motorCount; i++){
@@ -148,6 +156,7 @@ public class RemoteBrick {
             }
         }
     }
+
     //Sier til remote EV3 at man er ferdig med å bruke motorene.
     public void closeAll(){
         System.out.println("Closing motors at " + remoteName);
@@ -155,6 +164,7 @@ public class RemoteBrick {
             motors[i].close();
         }
     }
+
     //Spiller av en moo-lyd
     public void moo() {
         System.out.println("Spiller lyd: "+file);
@@ -170,6 +180,7 @@ public class RemoteBrick {
 
         }
     }
+    
     public void remoteMotorTest(){
         System.out.println("Setting speed.");
         for(int i=0;i<motors.length;i++){
