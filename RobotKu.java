@@ -2,7 +2,15 @@
  * Creation date:   17.10.2018
  * Authors:         Cato Bakken, Eirik Hemstad, Jonas B. Jacobsen, Torbjørn B. Lauvvik, Torstein H. Sundfær
  *
- * This class blablabla
+ * This class is an application for the RobotKu robot. The robot is non-interactive, and follows a cycle of:
+ * 1: Moo
+ * 2: Open and close mouth
+ * 3: Walk two steps
+ * 
+ * The robot follows this cycle until the touch sensor is held
+ *
+ * Dependencies:
+ * RemoteBrick.class
 */
 
 import lejos.hardware.motor.Motor;
@@ -47,8 +55,8 @@ public class RobotKu {
     // Private methods start
 
     /**
-    Sets up all the bricks, motors and sensors that the program will use
-    */
+     * Sets up all the bricks, motors and sensors that the program will use
+     */
     private static void setupEV3() {
         System.out.println("Initializing setup.");
 
@@ -84,24 +92,26 @@ public class RobotKu {
     }
 
     /**
-    Plays a 'moo' sound effect at the specified remote brick
-    */
+     * Plays a 'moo' sound effect at the specified remote brick
+     * @param: rBrick
+     */
     private static void playMoo(RemoteBrick rBrick){
         rBrick.moo();
     }
 
     /**
-    Shuts off the robot
-    */
+     * Shuts off the robot
+     */
     private static void shutOff(){
         System.out.println("Adieu");
         ev2.closeAll();
         ev3.closeAll();
     }
 
-    /*
-    Makes the application pause for the specified time (milliseconds)
-    */
+    /**
+     * Makes the application pause for the specified time (milliseconds)
+     * @param: duration
+     */
     private static void delay(int duration){
         try {
 			Thread.sleep(duration);
@@ -112,11 +122,11 @@ public class RobotKu {
     }
 
     /*
-    Makes the robot stand up
-    When raising up the robot, all motors rotate to the standing position
-    The order of the motor routine may be crucial to maintaining balance through the process
-    It is important that the robot is in the standard resting position
-    */
+     * Makes the robot stand up
+     * When raising up the robot, all motors rotate to the standing position
+     * The order of the motor routine may be crucial to maintaining balance through the process
+     * It is important that the robot is in the standard resting position
+     */
     private static void standUp() {
         System.out.println("Starting standing procedure.");
 
@@ -139,9 +149,9 @@ public class RobotKu {
     }    
 
     /**
-    Makes the robot lie down. The robot rotates all leg motors back to their starting position. 
-    If the robot stood up from the resting position, it should return to this.
-    */
+     * Makes the robot lie down. The robot rotates all leg motors back to their starting position. 
+     * If the robot stood up from the resting position, it should return to this.
+     */
     private static void lieDown() {
         System.out.println("Starting liedown procedure.");
 
@@ -163,11 +173,11 @@ public class RobotKu {
     }
 
     /**
-    Makes the robot walk two steps forward
-    When walking, the robot lifts two of its legs (one front, one back, opposite to each other) at a time, before setting them down
-    This process is a little clunky, and the robot has some issues maintaining balance throughout. The forward speed is also very slow.
-    This may be improved upon by careful observation and testing, but the team ran out of time to optimize this further for v1.0.
-    */
+     * Makes the robot walk two steps forward
+     * When walking, the robot lifts two of its legs (one front, one back, opposite to each other) at a time, before setting them down
+     * This process is a little clunky, and the robot has some issues maintaining balance throughout. The forward speed is also very slow.
+     * This may be improved upon by careful observation and testing, but the team ran out of time to optimize this further for v1.0.
+     */
     private static void walk() {
         ev2.setSpeedAll(WALK_SPEED);
         ev3.setSpeedAll(WALK_SPEED);
@@ -194,8 +204,8 @@ public class RobotKu {
     }
 
     /**
-    Uses the touch sensor to check for touch. If it does register a touch, return true
-    */
+     * Uses the touch sensor to check for touch. If it does register a touch, return true
+     */
     private static boolean checkForPush() {
         touchSample = new float[touchSensor.sampleSize()];
 
@@ -211,8 +221,9 @@ public class RobotKu {
     // Private methods end
 
     /**
-    Main method
-    */
+     * Main method
+     * @param: args
+     */
     public static void main(String[] args) {
         System.out.println("Robotku version " + VERSION_NUMBER);
 
