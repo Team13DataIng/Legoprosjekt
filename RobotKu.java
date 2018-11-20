@@ -37,7 +37,7 @@ public class RobotKu {
     private static RemoteBrick ev2;
 
     // Initialize constants
-    private static final String VERSION_NUMBER = "1.0.6";
+    private static final String VERSION_NUMBER = "1.0.7";
 
     // Leg constants
     private static final int WALK_SPEED = 70;
@@ -239,14 +239,17 @@ public class RobotKu {
 
         // Run while the push sensor is not pushed
         while (!checkForPush()) {
-            // Play moo sound
-            playMoo(ev2);
-
-            // Open and close the mouth
+            // Open mouth
             Motor.A.rotate(60);
             while(Motor.A.isMoving()){
                 //wait
             }
+
+            // Play moo sound
+            playMoo(ev2);
+
+            // Close the mouth
+            
             Motor.A.rotate(-60);
             while(Motor.A.isMoving()){
                 //wait
